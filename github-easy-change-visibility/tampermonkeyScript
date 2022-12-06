@@ -1,0 +1,69 @@
+// ==UserScript==
+// @name         Github Change Visibility Auto Input
+// @namespace    http://tampermonkey.net/
+// @version      0.1
+// @description  
+// @author       tereza-tech@github.com
+// @match        https://github.com/*/*/settings
+// @grant        none
+// ==/UserScript==
+
+(function() {
+    'use strict';
+    var qr = GM_getValue("GITHUB_change_visibility_requests_redirect", false); // true/false
+    var tr = GM_getValue("GITHUB_change_visibility_target_repository", false); // {"user": "", "repo": ""}
+
+    /*
+    win2=window.open("http://www.msn.com")
+    win2.blur()
+    window.focus()
+    */
+
+    var dzSelector = 'form[action="/tereza-tech/'+ tr +'/settings/set_visibility"]';
+    var dangerZone = document.querySelector(dzSelector);
+
+    function toggRadios() {
+        var pupri = dangerZone.querySelector("div.Box-body").querySelectorAll("input");
+        var ec = "checked";
+        if (pupri[1].hasAttribute(ec)) {
+            pupri[0].setAttribute(ec, "");
+            pupri[1].removeAttribute(ec);
+        } else {
+            pupri[1].setAttribute(ec, "");
+            pupri[0].removeAttribute(ec);
+        }
+    }
+
+
+    function handleForm() {
+        dangerZone.querySelector("summary").addEventListener(
+        "click",
+        () => {
+            dangerZone.querySelector("details-dialog input.form-control").value='tereza-tech/'+ tr;
+            dangerZone.querySelector('button[type="submit"]').removeAttribute("disabled");
+            toggRadios();
+        })
+    }
+
+
+    function autopilotConfirm() {
+        GM_getValue("GITHUB_change_visibility_requests_redirect", false); // true/false
+        GM_getValue("GITHUB_change_visibility_target_repository", false);
+        dangerZone.querySelector('button[type="submit"]').click();
+    }
+
+
+    function probeStorage() {
+        var ev;
+        if (qr == true && tr) {
+            autopilotConfirm()
+
+        } else if (qr !== true && !tr) {
+            //
+        } else if (qr == true && !tr) {
+            //
+        } else {
+            //
+        }
+    }
+})();
